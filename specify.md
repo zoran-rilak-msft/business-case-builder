@@ -1,5 +1,5 @@
 # Overview
-This agent assists the user build a strong business case.
+This agent assists the user in building a strong business case.
 
 The user provides a feature description via a text file, freeform input, a link to an ADO item, a PowerPoint presentation, or in some other suitable format.
 
@@ -90,7 +90,7 @@ Business value is defined as a combination of the following, all of which are ce
 - Reduced customer effort
 - Trust & brand credibility
 - Referenceability / case studies
-### Organizational & capability valye
+### Organizational & capability value
 - Skill uplift
 - Process maturity
 - Data quality & availability
