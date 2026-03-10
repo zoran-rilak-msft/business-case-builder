@@ -1,0 +1,22 @@
+{
+  "id": 12345,
+  "title": "Implement SSO for Enterprise Customers",
+  "description": "<div>Enable single sign-on authentication for our SaaS platform, allowing enterprise customers to log in using their corporate identity provider (Azure AD, Okta, or Google Workspace).</div><div><br></div><div>This feature will eliminate the need for separate credentials, reduce password-related support tickets, and meet enterprise security requirements.</div>",
+  "acceptance_criteria": "<div>- Users can log in via Azure AD, Okta, or Google Workspace<br>- Existing accounts are linked by email during SSO onboarding<br>- SSO is mandatory for enterprise tier, optional for self-serve<br>- Admin console shows SSO configuration status</div>",
+  "work_item_type": "Feature",
+  "state": "Active",
+  "assigned_to": "Jane Smith",
+  "tags": ["enterprise", "security", "authentication", "P1"],
+  "linked_items": [
+    {
+      "id": 12346,
+      "title": "Azure AD SAML Integration",
+      "relation_type": "Child"
+    },
+    {
+      "id": 12347,
+      "title": "SSO Admin Configuration Panel",
+      "relation_type": "Child"
+    }
+  ]
+}

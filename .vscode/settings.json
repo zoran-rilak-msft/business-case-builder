@@ -1,14 +1,12 @@
 {
-    "chat.promptFilesRecommendations": {
-        "speckit.constitution": true,
-        "speckit.specify": true,
-        "speckit.plan": true,
-        "speckit.tasks": true,
-        "speckit.implement": true
-    },
-    "chat.tools.terminal.autoApprove": {
-        ".specify/scripts/bash/": true,
-        ".specify/scripts/powershell/": true
-    }
+    "chat.promptFilesRecommendations": [
+        ".github/prompts/bcb.prompt.md"
+    ],
+    "chat.tools.terminal.autoApprove": [
+        "python scripts/generate_charts.py*",
+        "python scripts/generate_report.py*",
+        "python scripts/parse_pptx.py*",
+        "python scripts/fetch_ado_item.py*",
+        "python scripts/check_setup.py*"
+    ]
 }
-

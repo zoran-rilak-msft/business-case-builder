@@ -1,0 +1,133 @@
+{
+  "feature": {
+    "title": "SSO Integration",
+    "description": "Add single sign-on authentication to our SaaS platform, allowing users to log in using their corporate identity provider (Azure AD, Okta, or Google Workspace) instead of maintaining separate credentials.",
+    "target_users": ["Enterprise IT administrators", "End users of the SaaS platform"],
+    "source_format": "text",
+    "source_reference": null
+  },
+  "value_estimates": [
+    {
+      "category_id": "cost_reduction",
+      "category_name": "Cost Reduction and Avoidance",
+      "subcategory": "Operational cost reduction → Support/incident cost reduction",
+      "dollar_value_low": 120000,
+      "dollar_value_high": 180000,
+      "dollar_unit": "per_year",
+      "confidence": "strong",
+      "reasoning": "Password reset tickets currently account for 25-30% of IT helpdesk volume. SSO eliminates this category entirely for integrated accounts. Based on industry average of $15-25 per password reset ticket and 8,000-10,000 resets/year.",
+      "methodology": "Bottom-up calculation: (annual reset tickets) × (cost per ticket). Validated against Gartner benchmark of $70 per password reset when including productivity loss.",
+      "assumptions": [
+        "Current helpdesk handles approximately 8,000-10,000 password resets per year",
+        "SSO adoption reaches 80% within 6 months of launch"
+      ],
+      "is_hard_dollar": true,
+      "citations": [
+        {
+          "id": "cite-001",
+          "source_type": "internet",
+          "title": "Gartner: The True Cost of Password Resets (2025)",
+          "url": "https://www.gartner.com/en/documents/password-reset-cost-analysis",
+          "excerpt": "The average cost of a single password reset, including IT labor and end-user productivity loss, ranges from $40 to $70 per incident.",
+          "reliability": "primary"
+        },
+        {
+          "id": "cite-002",
+          "source_type": "sharepoint",
+          "title": "Q3 2025 IT Helpdesk Report",
+          "url": null,
+          "excerpt": "Password-related tickets represented 28% of total helpdesk volume (2,340 of 8,357 tickets) in Q3 2025.",
+          "reliability": "primary"
+        }
+      ]
+    },
+    {
+      "category_id": "user_adoption",
+      "category_name": "User and Adoption Value",
+      "subcategory": "Behavioral change → Reduced abandonment/friction",
+      "dollar_value_low": null,
+      "dollar_value_high": null,
+      "dollar_unit": "per_year",
+      "confidence": "medium",
+      "reasoning": "SSO reduces login friction, which is a leading indicator for increased daily active usage. Industry data suggests 20-30% improvement in login completion rates after SSO implementation.",
+      "methodology": "Comparative analysis of pre/post SSO adoption metrics from similar SaaS platforms.",
+      "assumptions": [
+        "Current login abandonment rate is approximately 8-12%",
+        "SSO will reduce abandonment to under 3%"
+      ],
+      "is_hard_dollar": false,
+      "citations": [
+        {
+          "id": "cite-003",
+          "source_type": "internet",
+          "title": "Okta: The Business Value of SSO (2024)",
+          "url": "https://www.okta.com/resources/business-value-sso",
+          "excerpt": "Organizations implementing SSO see an average 27% increase in application adoption and a 50% reduction in login-related support requests.",
+          "reliability": "secondary"
+        }
+      ]
+    },
+    {
+      "category_id": "risk_reduction",
+      "category_name": "Risk Reduction and Mitigation",
+      "subcategory": "Security risk reduction → Reduced breach likelihood",
+      "dollar_value_low": 50000,
+      "dollar_value_high": 200000,
+      "dollar_unit": "per_year",
+      "confidence": "weak",
+      "reasoning": "SSO with MFA reduces credential-based attack vectors. The expected value of risk reduction is estimated as (probability of credential breach) × (average breach cost) × (reduction factor from SSO+MFA).",
+      "methodology": "Expected value calculation using IBM/Ponemon breach cost data and NIST probability estimates.",
+      "assumptions": [
+        "Annual probability of credential-based breach estimated at 5-15%",
+        "SSO with MFA reduces credential attack surface by approximately 60-80%"
+      ],
+      "is_hard_dollar": true,
+      "citations": [
+        {
+          "id": "cite-004",
+          "source_type": "internet",
+          "title": "IBM Cost of a Data Breach Report 2025",
+          "url": "https://www.ibm.com/reports/data-breach",
+          "excerpt": "The average cost of a data breach reached $4.88 million in 2025, with compromised credentials being the most common initial attack vector at 16% of breaches.",
+          "reliability": "primary"
+        },
+        {
+          "id": "cite-005",
+          "source_type": "communications",
+          "title": "Email from CISO regarding security audit findings",
+          "url": null,
+          "excerpt": "Our penetration test identified credential stuffing as a high-risk vector. Recommend SSO with enforced MFA as primary mitigation.",
+          "reliability": "primary"
+        }
+      ]
+    }
+  ],
+  "leading_indicators": [
+    {
+      "indicator": "Daily Active Users (DAU)",
+      "linked_outcome": "Increased platform engagement drives upsell and expansion revenue",
+      "expected_impact": "15-25% increase in DAU within 3 months of SSO rollout"
+    },
+    {
+      "indicator": "Login completion rate",
+      "linked_outcome": "Reduced friction directly improves trial-to-paid conversion",
+      "expected_impact": "Login completion rate improves from ~90% to >97%"
+    }
+  ],
+  "strategic_value": {
+    "summary": "SSO integration is a table-stakes enterprise requirement. Without it, the platform cannot compete for enterprise deals above 500 seats. Implementation unblocks the enterprise sales pipeline and positions the platform for SOC 2 Type II compliance, which is a prerequisite for 3 pending deals worth $2.1M ARR.",
+    "dimensions": [
+      "Competitive differentiation — feature parity with enterprise competitors",
+      "Platform optionality — enables future SCIM provisioning and zero-trust architecture",
+      "Ecosystem leverage — partner integrations require SSO as a baseline"
+    ]
+  },
+  "assumptions_made": [
+    "Implementation covers Azure AD, Okta, and Google Workspace as initial identity providers",
+    "Existing user accounts will be migrated via email-based matching during SSO onboarding",
+    "SSO will be mandatory for enterprise tier but optional for self-serve tier"
+  ],
+  "sources_unavailable": [],
+  "mode": "interactive",
+  "generated_at": "2026-03-10T15:00:00Z"
+}
