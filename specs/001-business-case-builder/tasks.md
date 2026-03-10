@@ -41,9 +41,9 @@
 
 ## Phase 3: User Story 1 — Generate Business Case from Feature Description (Priority: P1) 🎯 MVP
 
-**Goal**: User provides a freeform text feature description via `@bcb`, the agent analyzes it for business value across 8 categories, and generates a Word document report with hard dollar estimates, confidence ratings, source citations, and charts.
+**Goal**: User provides a freeform text feature description via `@business-case-builder`, the agent analyzes it for business value across 8 categories, and generates a Word document report with hard dollar estimates, confidence ratings, source citations, and charts.
 
-**Independent Test**: Invoke `@bcb Add single sign-on to our SaaS platform` and verify a .docx file is produced containing: executive summary, at least one dollar estimate with reasoning, confidence levels, and at least one embedded chart.
+**Independent Test**: Invoke `@business-case-builder Add single sign-on to our SaaS platform` and verify a .docx file is produced containing: executive summary, at least one dollar estimate with reasoning, confidence levels, and at least one embedded chart.
 
 ### Implementation for User Story 1
 
@@ -54,7 +54,7 @@
 - [x] T013 [US1] Create tests/test_generate_report.py — test report generation from sample-feature.json produces valid .docx, test all required sections are present (exec summary, value analysis, citations), test chart embedding works with sample PNGs, test missing template falls back to plain document, test output filename auto-generation
 - [x] T014 [P] [US1] Create tests/fixtures/sample-feature.json — a complete ReportInput JSON with: feature (title: "SSO Integration", description, target_users, source_format: "text"), 3 value_estimates across different categories (one with is_hard_dollar: true, varying confidence levels, 2+ citations each), leading_indicators (2 entries), strategic_value, assumptions_made (3 items), mode: "interactive"
 
-**Checkpoint**: User Story 1 is fully functional — `@bcb [text]` produces a complete Word document business case report
+**Checkpoint**: User Story 1 is fully functional — `@business-case-builder [text]` produces a complete Word document business case report
 
 ---
 
@@ -62,7 +62,7 @@
 
 **Goal**: The agent engages in interactive dialogue, asking clarifying questions and presenting findings for user confirmation before generating the report. This is the default mode.
 
-**Independent Test**: Invoke `@bcb Improve performance` (deliberately vague) and verify the agent asks at least one clarifying question, presents a summary of findings, and requests confirmation before generating the report.
+**Independent Test**: Invoke `@business-case-builder Improve performance` (deliberately vague) and verify the agent asks at least one clarifying question, presents a summary of findings, and requests confirmation before generating the report.
 
 ### Implementation for User Story 2
 
@@ -77,7 +77,7 @@
 
 **Goal**: The agent searches M365 data (via WorkIQ) and public Internet (via web_search) to find evidence supporting business value estimates. Every claim is backed by a citation.
 
-**Independent Test**: Invoke `@bcb Implement automated CI/CD pipeline` and verify the report includes citations from at least two distinct source types (e.g., internet + sharepoint) and that each value estimate references at least one source.
+**Independent Test**: Invoke `@business-case-builder Implement automated CI/CD pipeline` and verify the report includes citations from at least two distinct source types (e.g., internet + sharepoint) and that each value estimate references at least one source.
 
 ### Implementation for User Story 3
 
@@ -94,7 +94,7 @@
 
 **Goal**: Users can provide feature descriptions as text files, Azure DevOps work items, or PowerPoint presentations in addition to freeform text.
 
-**Independent Test**: Invoke `@bcb --ado-item 12345` and `@bcb --pptx deck.pptx` and verify both produce equivalent business case reports with extracted feature information.
+**Independent Test**: Invoke `@business-case-builder --ado-item 12345` and `@business-case-builder --pptx deck.pptx` and verify both produce equivalent business case reports with extracted feature information.
 
 ### Implementation for User Story 4
 
@@ -114,14 +114,14 @@
 
 **Goal**: Users can request fully autonomous operation where the agent completes the entire analysis without interactive prompts, documenting all assumptions.
 
-**Independent Test**: Invoke `@bcb --autonomous Add real-time notifications` and verify the agent produces a complete report without any intermediate questions, with an assumptions section listing all decisions made.
+**Independent Test**: Invoke `@business-case-builder --autonomous Add real-time notifications` and verify the agent produces a complete report without any intermediate questions, with an assumptions section listing all decisions made.
 
 ### Implementation for User Story 5
 
 - [x] T028 [US5] Update .github/agents/bcb.agent.md — add autonomous mode handling: detect --autonomous flag from $ARGUMENTS; when autonomous: skip all ask_user calls (clarifying questions and confirmation), make reasonable assumptions when encountering ambiguity (document each in assumptions_made array), proceed directly from research to report generation, include all assumptions prominently in the ReportInput JSON; ensure autonomous mode still performs WorkIQ and web search research (don't skip evidence gathering)
 - [x] T029 [US5] Update scripts/generate_report.py — add dedicated "Assumptions and Agent Decisions" section in the report when assumptions_made is non-empty: list each assumption with context explaining why the assumption was necessary and what alternative interpretations exist; place this section prominently after the executive summary
 
-**Checkpoint**: Users can run `@bcb --autonomous [description]` for unattended, fully automated business case generation
+**Checkpoint**: Users can run `@business-case-builder --autonomous [description]` for unattended, fully automated business case generation
 
 ---
 
@@ -130,7 +130,7 @@
 **Purpose**: Documentation, configuration, and final validation
 
 - [x] T030 [P] Update .vscode/settings.json — add bcb prompt to chat.promptFilesRecommendations and auto-approve scripts/ directory in chat.tools.terminal.autoApprove
-- [x] T031 [P] Create README.md at repository root — project overview, prerequisites (Python 3.12+, Copilot with agent support, WorkIQ enabled), installation instructions (pip install), usage examples (@bcb with all input formats), development guide (running tests, linting)
+- [x] T031 [P] Create README.md at repository root — project overview, prerequisites (Python 3.12+, Copilot with agent support, WorkIQ enabled), installation instructions (pip install), usage examples (@business-case-builder with all input formats), development guide (running tests, linting)
 - [x] T032 Run python scripts/check_setup.py to validate all dependencies are installable
 - [x] T033 Run pytest to validate all test suites pass
 
@@ -223,7 +223,7 @@ Task T027: "Update .github/agents/bcb.agent.md with multi-format input handling"
 1. Complete Phase 1: Setup
 2. Complete Phase 2: Foundational (CRITICAL — blocks all stories)
 3. Complete Phase 3: User Story 1
-4. **STOP and VALIDATE**: Invoke `@bcb Add SSO to our platform` and verify Word report is generated
+4. **STOP and VALIDATE**: Invoke `@business-case-builder Add SSO to our platform` and verify Word report is generated
 5. Deploy/demo if ready — user can already generate business cases from text
 
 ### Incremental Delivery

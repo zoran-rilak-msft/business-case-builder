@@ -40,7 +40,7 @@ No other configuration is needed — Copilot handles LLM access and WorkIQ handl
 ### In Copilot Chat (VS Code or CLI)
 
 ```
-@bcb Add single sign-on authentication to our SaaS platform
+@business-case-builder Add single sign-on authentication to our SaaS platform
 ```
 
 The agent will:
@@ -53,7 +53,7 @@ The agent will:
 ### Autonomous Mode
 
 ```
-@bcb --autonomous Add single sign-on authentication to our SaaS platform
+@business-case-builder --autonomous Add single sign-on authentication to our SaaS platform
 ```
 
 The agent proceeds without interactive prompts and documents all assumptions.
@@ -61,9 +61,9 @@ The agent proceeds without interactive prompts and documents all assumptions.
 ### Input from Files
 
 ```
-@bcb --file feature-description.txt
-@bcb --pptx feature-deck.pptx
-@bcb --ado-item 12345
+@business-case-builder --file feature-description.txt
+@business-case-builder --pptx feature-deck.pptx
+@business-case-builder --ado-item 12345
 ```
 
 ### Output

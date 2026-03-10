@@ -5,7 +5,7 @@
 
 ## Summary
 
-Build a GitHub Copilot agent (`@bcb`) that accepts a feature description, researches business value across eight defined categories using Copilot's built-in tools (WorkIQ MCP for M365 data, web search for public Internet), and produces a Word document report with hard dollar value estimates, confidence ratings, source citations, and visual aids. The agent runs inside GitHub Copilot Chat, leveraging Copilot's own LLM for reasoning and orchestration, and calls Python helper scripts via bash for document generation and input parsing.
+Build a GitHub Copilot agent (`@business-case-builder`) that accepts a feature description, researches business value across eight defined categories using Copilot's built-in tools (WorkIQ MCP for M365 data, web search for public Internet), and produces a Word document report with hard dollar value estimates, confidence ratings, source citations, and visual aids. The agent runs inside GitHub Copilot Chat, leveraging Copilot's own LLM for reasoning and orchestration, and calls Python helper scripts via bash for document generation and input parsing.
 
 ## Technical Context
 

@@ -2,24 +2,24 @@
 
 **Branch**: `001-business-case-builder` | **Date**: 2026-03-10
 
-## Agent: `@bcb`
+## Agent: `@business-case-builder`
 
 The Business Case Builder is a GitHub Copilot agent defined in `.github/agents/bcb.agent.md`. Users invoke it in Copilot Chat to analyze a feature and generate a business case report.
 
 ### Invocation
 
 ```
-@bcb [OPTIONS] <FEATURE_DESCRIPTION>
+@business-case-builder [OPTIONS] <FEATURE_DESCRIPTION>
 ```
 
 ### Input Formats
 
 | Format | Syntax | Description |
 |--------|--------|-------------|
-| Freeform text | `@bcb Add SSO to our SaaS platform` | Direct feature description |
-| Text file | `@bcb --file path/to/description.txt` | Read description from file |
-| ADO work item | `@bcb --ado-item 12345` | Fetch feature from Azure DevOps |
-| PowerPoint | `@bcb --pptx path/to/deck.pptx` | Extract feature from presentation |
+| Freeform text | `@business-case-builder Add SSO to our SaaS platform` | Direct feature description |
+| Text file | `@business-case-builder --file path/to/description.txt` | Read description from file |
+| ADO work item | `@business-case-builder --ado-item 12345` | Fetch feature from Azure DevOps |
+| PowerPoint | `@business-case-builder --pptx path/to/deck.pptx` | Extract feature from presentation |
 
 ### Options
 

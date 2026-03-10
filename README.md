@@ -1,4 +1,4 @@
-# Business Case Builder (`@bcb`)
+# Business Case Builder (`@business-case-builder`)
 
 A GitHub Copilot agent that analyzes feature descriptions, researches business value across multiple sources, and generates comprehensive Word document reports with hard dollar estimates, charts, and source citations.
 
@@ -29,32 +29,32 @@ Invoke the agent in GitHub Copilot Chat:
 
 ### Basic — from text description
 ```
-@bcb Add single sign-on authentication to our SaaS platform
+@business-case-builder Add single sign-on authentication to our SaaS platform
 ```
 
 ### From a file
 ```
-@bcb --file docs/feature-proposal.md
+@business-case-builder --file docs/feature-proposal.md
 ```
 
 ### From a PowerPoint deck
 ```
-@bcb --pptx presentations/product-roadmap.pptx
+@business-case-builder --pptx presentations/product-roadmap.pptx
 ```
 
 ### From an Azure DevOps work item
 ```
-@bcb --ado-item 12345
+@business-case-builder --ado-item 12345
 ```
 
 ### Autonomous mode (no interactive prompts)
 ```
-@bcb --autonomous Implement real-time collaboration features
+@business-case-builder --autonomous Implement real-time collaboration features
 ```
 
 ### Custom output path
 ```
-@bcb --output reports/sso-business-case.docx Add SSO to our platform
+@business-case-builder --output reports/sso-business-case.docx Add SSO to our platform
 ```
 
 ## What the Agent Does
