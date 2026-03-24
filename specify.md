@@ -7,10 +7,17 @@ The agent reviews the feature and first builds a strong understanding of its pur
 
 When the agent understands the feature, it estimates its business value and presents the findings to the user as a Word document. It may include graphs and diagrams as appropriate.
 
+## Understanding the feature
+By default, engage the user in an interactive fashion to discover the scope of the feature's proposed changes. There's no upper cap on the number of questions the agent can ask, but this should not become overly burdensome on the user. Use your best judgement.
+
+Before prompting the user for additional information on feature scope, the agent should attempt to extract the information from its available sources. There is no limit on how far back in time the agent should search for additional context unless instructed otherwise.
+
 ## Business value
 Once the agent understands the feature, it then scans all the available sources of information (Internet, intranet, user's communications, Azure DevOps, etc. - users can provide more) for business value.
 
-This process may be interactive unless the user asks the agent to operate fully autonomously.
+This process may be interactive unless the user asks the agent to operate fully autonomously. Similar to the above, there's no upper cap to the number of questions that the agent should ask, but the agent should stop when there's a certain level of contextual saturation reached.
+
+Before prompting the user for additional information on feature impact and business value, the agent should attempt to extract the information from its available sources. There is no limit on how far back in time the agent should search for additional context unless instructed otherwise.
 
 Business value is defined as a combination of the following, all of which are centered *on the business of the user and not of the customer*, and estimated by the agent based on the information it found:
 

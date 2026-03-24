@@ -219,3 +219,41 @@ class AdoItemOutput(BaseModel):
     assigned_to: Optional[str] = None
     tags: list[str]
     linked_items: list[LinkedItem]
+
+
+# ---------------------------------------------------------------------------
+# SharePoint search models
+# ---------------------------------------------------------------------------
+
+class SharePointSearchItem(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    drive_item_id: str
+    title: str
+    url: str
+    site_name: str
+    last_modified: str
+    file_type: str
+    snippet: str
+    size_bytes: int
+
+
+class SharePointSearchResult(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    query: str
+    site_scope: str | None = None
+    result_count: int
+    results: list[SharePointSearchItem]
+
+
+class SharePointDocumentContent(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    drive_item_id: str
+    title: str
+    url: str
+    file_type: str
+    extracted_text: str
+    page_count: int | None = None
+    extraction_method: str
