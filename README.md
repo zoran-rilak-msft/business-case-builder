@@ -8,6 +8,7 @@ A GitHub Copilot agent that analyzes feature descriptions, researches business v
 - **GitHub Copilot** with agent support enabled
 - **WorkIQ** (Microsoft 365 Copilot) enabled for M365 data access
 - **Azure DevOps PAT** (optional, only for `--ado-item` input)
+- **Azure AD app registration** (optional, for direct SharePoint document search — see [SharePoint Setup](#sharepoint-direct-search-setup))
 
 ## Installation
 
@@ -57,11 +58,16 @@ Invoke the agent in GitHub Copilot Chat:
 @business-case-builder --output reports/sso-business-case.docx Add SSO to our platform
 ```
 
+### Scoped SharePoint search
+```
+@business-case-builder --sharepoint-site https://contoso.sharepoint.com/sites/engineering Add TLS certificate management
+```
+
 ## What the Agent Does
 
 1. **Parses input** — accepts text, files, PPTX decks, or ADO work items
 2. **Comprehends the feature** — extracts title, purpose, target users, impact areas
-3. **Researches evidence** — searches M365 (SharePoint, Outlook, Teams) via WorkIQ and the public internet
+3. **Researches evidence** — searches M365 (SharePoint, Outlook, Teams) via WorkIQ, downloads and analyzes full SharePoint documents via Microsoft Graph, and searches the public internet
 4. **Estimates business value** across 8 categories:
    - Revenue and Monetization
    - Cost Reduction and Avoidance
@@ -115,6 +121,8 @@ scripts/
   generate_report.py      # Report assembly (python-docx)
   parse_pptx.py           # PowerPoint text extraction
   fetch_ado_item.py       # Azure DevOps work item fetcher
+  search_sharepoint.py    # SharePoint search & document text extraction (Graph API)
+  sharepoint_auth.py      # MSAL device-code authentication for Graph
   check_setup.py          # Dependency verification
 templates/
   business-case-template.dotx  # Word document template
@@ -125,6 +133,7 @@ tests/
   test_generate_report.py
   test_parse_pptx.py
   test_fetch_ado_item.py
+  test_search_sharepoint.py
 ```
 
 ## Environment Variables
@@ -133,6 +142,40 @@ tests/
 |----------|----------|-------------|
 | `ADO_ORG_URL` | For `--ado-item` only | Azure DevOps organization URL |
 | `ADO_PAT` | For `--ado-item` only | Azure DevOps Personal Access Token |
+| `BCB_GRAPH_CLIENT_ID` | For SharePoint search only | Azure AD application (client) ID |
+
+## SharePoint Direct Search Setup
+
+The agent can search SharePoint via WorkIQ (no setup needed) for quick natural-language queries. For **full document download and analysis**, configure direct Graph API access:
+
+### 1. Register an Azure AD application
+
+1. Go to [Azure Portal → App registrations](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)
+2. Click **New registration**
+3. Name: `Business Case Builder` (or any name)
+4. Supported account types: **Accounts in this organizational directory only**
+5. Redirect URI: **Public client/native (mobile & desktop)** → `http://localhost`
+6. Click **Register**
+
+### 2. Configure API permissions
+
+1. Go to **API permissions** → **Add a permission** → **Microsoft Graph** → **Delegated permissions**
+2. Add: `Sites.Read.All`, `Files.Read.All`
+3. Click **Grant admin consent** (or ask your IT admin)
+
+### 3. Set the environment variable
+
+```bash
+export BCB_GRAPH_CLIENT_ID="your-app-client-id-here"
+```
+
+### 4. Authenticate (first use)
+
+```bash
+python scripts/search_sharepoint.py --login
+```
+
+This opens a device-code flow — follow the on-screen instructions to sign in. Tokens are cached at `~/.bcb/graph_token_cache.bin` for subsequent runs.
 
 ## License
 

@@ -1,15 +1,5 @@
 ---
 description: "Build a business case report for a feature"
-tools:
-  - bash
-  - web_search
-  - workiq-ask_work_iq
-  - workiq-accept_eula
-  - skill
-  - view
-  - create
-  - ask_user
-  - edit
 handoffs:
   - label: "Refine Estimates"
     agent: business-case-builder
@@ -47,44 +37,15 @@ if [ ! -f "$BCB_HOME/.venv/bin/python" ] && [ ! -f "$BCB_HOME/.venv/Scripts/pyth
 fi
 
 "$BCB_HOME/.venv/bin/pip" install --quiet \
-  python-docx>=1.1.0 matplotlib>=3.8.0 python-pptx>=1.0.0 azure-devops>=7.1.0b4 pydantic>=2.0.0 2>&1 | tail -3
+  python-docx>=1.1.0 matplotlib>=3.8.0 python-pptx>=1.0.0 azure-devops>=7.1.0b4 pydantic>=2.0.0 \
+  PyPDF2>=3.0.0 openpyxl>=3.1.0 requests>=2.31.0 2>&1 | tail -3
 
 echo "[@business-case-builder] Runtime ready: $BCB_HOME"
 ```
 
-Execute this as a single bash command. If it fails, report the error and ask the user to run `pip install python-docx matplotlib python-pptx azure-devops pydantic` manually.
+Execute this as a single bash command. If it fails, report the error and ask the user to run `pip install python-docx matplotlib python-pptx azure-devops pydantic PyPDF2 openpyxl requests` manually.
 
 After bootstrap, use `$BCB_HOME/.venv/bin/python` for all script invocations (e.g., `$BCB_HOME/.venv/bin/python $BCB_HOME/scripts/generate_report.py ...`).
-
-### 0.1 WorkIQ Setup (Critical)
-
-WorkIQ provides access to Microsoft 365 data (emails, SharePoint documents, Teams messages) and is **essential** for producing well-sourced business cases with internal evidence. Without it, the agent can only use web search and user-provided context, significantly reducing report quality.
-
-After the Python bootstrap above, verify WorkIQ is available by attempting a simple probe query:
-
-1. **Probe**: Call `workiq-ask_work_iq` with the question: `"What is my name?"`.
-
-2. **If the call succeeds** (returns a response with user info): WorkIQ is ready. Proceed to §1.
-
-3. **If the call fails with a EULA error** (response mentions EULA or consent):
-   - Tell the user: *"WorkIQ requires a one-time license agreement. This enables searching your organization's emails, SharePoint, and Teams for internal evidence — it dramatically improves business case quality."*
-   - Call `workiq-accept_eula` with `eulaUrl: "https://github.com/microsoft/work-iq-mcp"` and `userConsent: "yes"` — but **only after** the user has explicitly confirmed they accept. Use `ask_user` to get their confirmation first.
-   - After EULA acceptance, retry the probe query. If it succeeds, proceed to §1.
-
-4. **If the call fails with an authentication or configuration error** (not EULA-related):
-   - Tell the user: *"WorkIQ could not connect to Microsoft 365. This usually means the WorkIQ MCP server isn't configured or M365 authentication is needed."*
-   - Suggest: *"Run `/mcp add` in Copilot CLI to add the WorkIQ MCP server, or check your M365 authentication."*
-   - Then use `ask_user` to ask:
-     - **Question**: "WorkIQ is unavailable. Without it, the business case will rely only on web search and your input — internal documents, emails, and Teams messages won't be searched. This significantly reduces report quality. Proceed without WorkIQ?"
-     - **Choices**: `["Yes — proceed without WorkIQ", "No — I'll set up WorkIQ first and re-run"]`
-   - If the user chooses to proceed, continue to §1 but add `"WorkIQ unavailable — internal M365 data sources were not searched. Report relies on web search and user-provided context only."` to `sources_unavailable`.
-   - If the user chooses to set up WorkIQ first, stop and wait for them to re-invoke the agent.
-
-5. **If the `workiq-ask_work_iq` tool is not available at all** (tool not found / not loaded):
-   - Tell the user: *"The WorkIQ skill is not loaded. Attempting to activate it..."*
-   - Attempt to load it by calling the `skill` tool with `skill: "workiq"`.
-   - If loading succeeds, go back to step 1 (probe query).
-   - If loading fails, follow step 4 (ask for explicit confirmation to proceed without it).
 
 ---
 
@@ -154,16 +115,24 @@ Then determine:
 
 ## 3. Research Phase
 
-Gather evidence from multiple sources. Use all available tools:
+Gather evidence from multiple sources. Use all available tools.
 
-### 3.1 WorkIQ (Microsoft 365)
+### 3.0 WorkIQ (Microsoft 365)
 
-Use the `workiq-ask_work_iq` tool to search internal organizational data. For each applicable business value category, formulate targeted queries:
+WorkIQ provides access to Microsoft 365 data (emails, SharePoint documents, Teams messages) and is available as a built-in tool. It requires **no additional setup** — it leverages the user's existing M365 session. Invoke it directly whenever you need to search internal organizational data — you may call it multiple times throughout the session to gather additional context.
 
-**SharePoint searches**:
-- "Find documents about {feature domain} business case on SharePoint"
-- "Find strategy documents or financial models related to {impact area}"
-- "Find prior business cases or ROI analyses for {similar capabilities}"
+WorkIQ supports a `fileUrls` parameter that accepts OneDrive or SharePoint document URLs. When file URLs are provided, WorkIQ retrieves and analyzes the **full document content** rather than returning a summary. Always prefer passing `fileUrls` when you have document URLs, as this produces stronger, more detailed evidence.
+
+The WorkIQ research phase has two stages: **Discovery** (find relevant documents and communications) and **Deep Fetch** (retrieve full document content for the most promising hits).
+
+### 3.1 Stage 1 — Discovery
+
+For each applicable business value category, formulate targeted queries to find relevant internal evidence. The goal is to identify documents and their SharePoint/OneDrive URLs for deeper analysis in Stage 2.
+
+**SharePoint document searches** (ask for document names and URLs explicitly):
+- "Find SharePoint documents about {feature domain} business case. Include the document titles and SharePoint URLs."
+- "Find strategy documents or financial models related to {impact area} on SharePoint. List each document with its URL."
+- "Find prior business cases or ROI analyses for {similar capabilities} on SharePoint. Provide document URLs."
 
 **Outlook/communications searches**:
 - "Find emails about {feature} priorities or budget from the last 6 months"
@@ -176,10 +145,84 @@ Use the `workiq-ask_work_iq` tool to search internal organizational data. For ea
 For each result, extract the relevant finding and format as a citation with:
 - `source_type`: "sharepoint" or "communications" as appropriate
 - `title`: Document or message title
+- `url`: The SharePoint/OneDrive URL if provided
 - `excerpt`: The specific relevant passage
 - `reliability`: Classify per §5 reliability criteria
 
 If WorkIQ returns no results for a query, note it in `sources_unavailable` and move on.
+
+**Collect all SharePoint/OneDrive document URLs** returned across all discovery queries. These are inputs to Stage 2.
+
+### 3.1.1 Stage 2 — Document Deep Fetch via WorkIQ
+
+After discovery, you will have a set of SharePoint/OneDrive document URLs pointing to potentially high-value documents (prior business cases, strategy decks, financial models, customer analyses). This stage retrieves and analyzes their **full content**.
+
+**Step 1 — Select high-value documents**:
+
+Review the documents found in Stage 1 and prioritize those most likely to contain business value evidence:
+- Prior business cases or ROI analyses (highest priority)
+- Strategy decks or roadmap documents
+- Financial models or cost analyses
+- Customer feedback summaries or survey results
+- Competitive analyses or market research
+
+Select up to **5 documents** for deep fetch. If more than 5 are found, prioritize by relevance to the feature under analysis.
+
+**Step 2 — Fetch full document content**:
+
+For each selected document (or batch of related documents), call WorkIQ with the `fileUrls` parameter to retrieve and analyze the full document content. Formulate specific analytical questions:
+
+- "From these documents, extract all dollar amounts, percentages, ROI figures, and quantitative metrics. List each data point with the document it came from."
+  `fileUrls`: [url1, url2, ...]
+
+- "What business value estimates, cost savings, or revenue projections are described in these documents? Quote the specific passages."
+  `fileUrls`: [url1, url2, ...]
+
+- "What assumptions, risks, or caveats are mentioned in these documents regarding {feature domain}?"
+  `fileUrls`: [url1, url2, ...]
+
+**Guidelines for fileUrls usage**:
+- Pass **1–3 document URLs per call** for best results. If you have more documents, make multiple calls.
+- Ask **specific, targeted questions** — not open-ended "summarize this document" requests.
+- Always ask for **verbatim quotes** and **specific numbers** to maximize citation quality.
+- If a document URL produces an error or empty response, note it in `sources_unavailable` with the reason and continue with other documents.
+
+**Step 2a — Verify content retrieval**:
+
+After each WorkIQ `fileUrls` call, evaluate whether the response contains **specific content from the document** — direct quotes, data points, tables, or structured findings that could only come from reading the document. If the response:
+- Only refers to the document by name or title
+- Provides generic information that could have been inferred from the filename or search snippet alone
+- States that it could not access or retrieve the file's contents
+- Returns an empty or minimal response despite the file being known to exist
+
+Then treat the document as **not successfully fetched**:
+1. Add the document to `sources_unavailable` with the reason (e.g., "WorkIQ could not retrieve document content" or "Response contained only metadata, not document content").
+2. Attempt retrieval via the **Graph API fallback** (Step 2b).
+
+**Step 2b — Graph API fallback (direct download)**:
+
+If WorkIQ cannot return substantive content for a high-value document, attempt direct text extraction via the `search_sharepoint.py` script. This requires the user to have Graph API credentials configured (`BCB_GRAPH_CLIENT_ID` environment variable).
+
+1. Check if `BCB_GRAPH_CLIENT_ID` is set. If not, skip this step and note the document in `sources_unavailable`.
+2. If the document's `drive_item_id` is known (from a prior `search_sharepoint.py --query` call), use it directly. Otherwise, search for the document:
+   ```bash
+   $BCB_HOME/.venv/bin/python $BCB_HOME/scripts/search_sharepoint.py --query "{document title}"
+   ```
+3. Download and extract the full text:
+   ```bash
+   $BCB_HOME/.venv/bin/python $BCB_HOME/scripts/search_sharepoint.py --download {driveId!itemId}
+   ```
+4. The output is a `SharePointDocumentContent` JSON containing `extracted_text` with the full document content. Use this text for analysis and citation extraction.
+5. If the download also fails (unsupported format, authentication error), add to `sources_unavailable` with the specific error and move on.
+
+**Step 3 — Record citations**:
+
+For each piece of evidence extracted from full documents, format as a citation:
+- `source_type`: `"sharepoint"`
+- `title`: The document title
+- `url`: The SharePoint/OneDrive document URL (for independent verification)
+- `excerpt`: The specific passage or data point extracted (prefer verbatim quotes)
+- `reliability`: Classify per §5 criteria (internal financial data = primary; strategy decks = secondary; meeting notes = tertiary)
 
 ### 3.2 Web Search
 
@@ -370,7 +413,10 @@ After completing research and value estimation, present a **structured findings 
 **Total Estimated Value**: $170k–$380k per year
 **Sources Used**: 5 (3 internet, 1 SharePoint, 1 communications)
 **Key Assumptions**: [list top 3 assumptions]
+**Document Coverage**: X documents found in discovery, Y fully analyzed, Z not accessible
 ```
+
+Include the **Document Coverage** line whenever SharePoint/OneDrive documents were discovered. If any documents were found but not analyzed (either because they exceeded the 5-document limit or because content retrieval failed), list the specific documents that were skipped or inaccessible so the user can decide whether to investigate further.
 
 ### 6.3 Confirmation and Revision Loop
 
@@ -528,7 +574,7 @@ Example: `business-case-copilot-context-sharing-2025-01-15.docx`
 
 These rules are **non-negotiable**:
 
-1. **NEVER invent citations or sources.** Every source must come from an actual tool call (web_search, workiq-ask_work_iq, web_fetch, view, or bash script output).
+1. **NEVER invent citations or sources.** Every source must come from an actual tool call (web_search, WorkIQ, web_fetch, view, or bash script output).
 2. **NEVER fabricate dollar values** without documented reasoning that traces back to evidence or clearly stated assumptions.
 3. If insufficient data exists for a category, mark confidence as `weak` and explicitly document the data gap.
 4. Sources that were attempted but could not be accessed go in the `sources_unavailable` list with the reason for failure.
@@ -546,3 +592,5 @@ These rules are **non-negotiable**:
 - If `scripts/generate_report.py` fails, output the raw JSON so the user still has the analysis.
 - If WorkIQ returns no results, note it and rely on web search and user-provided context.
 - If web search returns no relevant results for a category, mark confidence as `weak`.
+- If WorkIQ returns an error when fetching a document via `fileUrls`, note the document in `sources_unavailable` with the error and continue with other documents.
+- If WorkIQ returns a response when called with `fileUrls` but the response does not contain substantive content from the referenced documents (e.g., only mentions the document by name, provides generic information derivable from the filename alone, or states it cannot access the file), treat it as a content retrieval failure — add to `sources_unavailable` with the reason and attempt the Graph API fallback described in §3.1.1 Step 2b.
